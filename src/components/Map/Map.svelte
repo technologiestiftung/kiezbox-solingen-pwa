@@ -2,6 +2,7 @@
 	import { LAYER_STYLE } from '$lib/config/layer-style-positron';
 	import { LAYER_CONFIG } from '$lib/config/layers';
 	import { SOURCES_CONFIG } from '$lib/config/sources';
+	import { NetworkStore } from '$lib/state/networkState.svelte';
 	import { mapState, poiState } from '$lib/state/state.svelte';
 	import type { GeoJSON } from 'geojson';
 	import maplibregl, { type AddLayerObject, type LngLatLike } from 'maplibre-gl';
@@ -9,17 +10,24 @@
 	import { onMount } from 'svelte';
 	import Legend from './Legend.svelte';
 	import PopupCard from './PopupCard.svelte';
-	import { apiFetch } from '$lib/api';
-	import { NetworkStore } from '$lib/state/networkState.svelte';
 
 	let mapContainer: HTMLDivElement | undefined = $state();
 	let map: maplibregl.Map;
 
+	let coordinatesSet = $state(false);
+
+	let coordinates = $state(NetworkStore.coordinates ?? [7.062611, 51.167288]);
+
+	$effect(() => {
+		if (map && !coordinatesSet && NetworkStore.coordinates) {
+			coordinatesSet = true;
+			map.setCenter(NetworkStore.coordinates as LngLatLike);
+		}
+	});
 	onMount(() => {
 		if (!mapContainer) return;
 		const baseUrl = window.location.origin;
-		const coordinates = NetworkStore.coordinates ?? [13.342502830765682, 52.48863888739753];
-		console.log('Map coordinates:', coordinates);
+
 		map = new maplibregl.Map({
 			container: mapContainer,
 			style: {
@@ -29,16 +37,16 @@
 						type: 'vector',
 						tiles: [`${baseUrl}/pbf-tiles/{z}/{x}/{y}.pbf`],
 						attribution: '© OpenStreetMap contributors',
-						maxzoom: 13
+						maxzoom: 14
 					}
 				},
 				layers: LAYER_STYLE,
 				glyphs: '/fonts/{fontstack}/{range}.pbf?key={key}'
 			},
-			center: coordinates,
+			center: coordinates as [number, number],
 			zoom: 14,
 			attributionControl: false,
-			maxBounds: [13.091992716067702, 52.33488609760638, 13.742786470433, 52.67626223889507]
+			maxBounds: [6.951141, 51.114195, 7.174081, 51.220382]
 		});
 
 		const LAYER_IDS = LAYER_CONFIG.map((layer) => layer.id);
