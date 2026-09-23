@@ -25,6 +25,7 @@
 	let isProgrammaticScroll = false;
 	let programmaticScrollTimeout: number | null = null;
 
+	// svelte-ignore state_referenced_locally
 	let prevIsInCall = $state(isInCall);
 
 	$effect(() => {
@@ -213,6 +214,7 @@
 		onscroll={handleScroll}
 		onwheel={handleScroll}
 		ontouchmove={handleScroll}
+		role="region"
 		class="scroll-fade flex h-[calc(100vh-30rem)] w-full flex-1 flex-col items-center gap-10 overflow-y-auto scroll-smooth p-4 pb-32"
 		aria-label="Scrolling question bubbles"
 	>
