@@ -11,8 +11,10 @@
 	let cardRef: HTMLDivElement | undefined = $state();
 
 	let content = $state({});
-	let title = $state('Details');
-	let activeLayer = $state<(typeof LAYER_CONFIG)[number] | null>(null);
+	const activeLayer = $derived(
+		LAYER_CONFIG.find((layer) => layer.id === poiState.layer?.id) || null
+	);
+	const title = $derived(activeLayer?.label || 'Details');
 	let arrowPosition = $state({ left: '50%', top: '0', transform: 'translateX(-50%)' });
 
 	type ArrowDirection = 'top' | 'bottom' | 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
@@ -134,19 +136,11 @@
 	}
 
 	$effect(() => {
-		activeLayer = LAYER_CONFIG.find((layer) => layer.id === poiState.layer?.id) || null;
-	});
-
-	$effect(() => {
 		if (activeLayer && poiState.properties) {
 			content = activeLayer.getContent ? activeLayer.getContent(poiState.properties) : {};
 		} else {
 			content = {};
 		}
-	});
-
-	$effect(() => {
-		title = activeLayer?.label || 'Details';
 	});
 
 	$effect(() => {
@@ -203,7 +197,7 @@
 
 		<Card.Content>
 			<ul>
-				{#each Object.entries(content) as [key, value]}
+				{#each Object.entries(content) as [key, value] (key)}
 					<li
 						class="flex justify-between gap-2 px-4 py-2"
 						style={`display: ${typeof value === 'boolean' ? 'flex' : 'block'}; flex-direction: ${typeof value === 'boolean' ? 'row' : 'column'}`}

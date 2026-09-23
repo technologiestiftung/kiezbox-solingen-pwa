@@ -42,7 +42,7 @@
 		<Button
 			variant="ghost"
 			class="text-body-black justfiy-center flex w-32 cursor-pointer items-center space-x-2"
-			on:click={close}
+			onclick={close}
 			{disabled}
 		>
 			<span class="text-body-black">{$t('common.button.close')}</span>

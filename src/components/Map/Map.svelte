@@ -5,8 +5,12 @@
 	import { NetworkStore } from '$lib/state/networkState.svelte';
 	import { mapState, poiState } from '$lib/state/state.svelte';
 	import type { GeoJSON } from 'geojson';
-	import maplibregl, { type AddLayerObject, type LngLatLike } from 'maplibre-gl';
+	import * as maplibregl from 'maplibre-gl';
+	import type { AddLayerObject, LngLatLike } from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
+	// maplibre-gl v6 resolves its worker relative to its own module URL, which
+	// Vite neither pre-bundles nor emits — so let Vite bundle the worker itself
+	import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 	import { onMount } from 'svelte';
 	import Legend from './Legend.svelte';
 	import PopupCard from './PopupCard.svelte';
@@ -27,6 +31,8 @@
 	onMount(() => {
 		if (!mapContainer) return;
 		const baseUrl = window.location.origin;
+
+		maplibregl.setWorkerUrl(maplibreWorkerUrl);
 
 		map = new maplibregl.Map({
 			container: mapContainer,

@@ -1,4 +1,5 @@
 import { goto } from '$app/navigation';
+import { resolve } from '$app/paths';
 import { PUBLIC_WSS_PATH } from '$env/static/public';
 import { apiFetch } from '$lib/api';
 import { ApiStatus, DeviceType } from '$lib/enums';
@@ -153,7 +154,7 @@ export const setMeFree = async (): Promise<void> => {
 			throw new Error(`Set me free request failed with status: ${response.status}`);
 		}
 
-		goto('/', {
+		goto(resolve('/'), {
 			noScroll: true
 		});
 	} catch (error) {
