@@ -20,8 +20,6 @@
 
 	let coordinatesSet = $state(false);
 
-	let coordinates = $state(NetworkStore.coordinates ?? [7.062611, 51.167288]);
-
 	$effect(() => {
 		if (map && !coordinatesSet && NetworkStore.coordinates) {
 			coordinatesSet = true;
@@ -33,6 +31,11 @@
 		const baseUrl = window.location.origin;
 
 		maplibregl.setWorkerUrl(maplibreWorkerUrl);
+
+		// Matches the extent of the generated tiles (see static/pbf-tiles/metadata.json "bounds")
+		const dataBounds: [number, number, number, number] = [
+			6.951141, 51.114195, 7.174081, 51.220382
+		];
 
 		map = new maplibregl.Map({
 			container: mapContainer,
@@ -49,10 +52,10 @@
 				layers: LAYER_STYLE,
 				glyphs: '/fonts/{fontstack}/{range}.pbf?key={key}'
 			},
-			center: coordinates as [number, number],
-			zoom: 14,
+			bounds: dataBounds,
+			fitBoundsOptions: { padding: 20 },
 			attributionControl: false,
-			maxBounds: [6.951141, 51.114195, 7.174081, 51.220382]
+			maxBounds: dataBounds
 		});
 
 		const LAYER_IDS = LAYER_CONFIG.map((layer) => layer.id);
